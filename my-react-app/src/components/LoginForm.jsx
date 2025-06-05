@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useUser } from "../context/UserContext";
+import { UserProvider, useUser } from "../context/UserContext";
 import "./LoginForm.css"; 
 
 export default function LoginForm() {
@@ -8,13 +8,18 @@ export default function LoginForm() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const navigate = useNavigate();
-  const { login } = useUser();
+  const { login, user } = useUser();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     const success = await login({email, password});
     if (success) {
+      if(user?.role=="admin"){
+        navigate("/admin");
+      }
+      else{
       navigate("/dashboard");
+      }
     } else {
       setError("Nieprawidłowy email lub hasło.");
     }

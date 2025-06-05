@@ -9,15 +9,26 @@ export const UserProvider = ({ children }) => {
   });
 
   const login = async ({ email, password }) => {
-    // FAKE  – zamień na prawdziwe
+    // FAKE – dodajemy logikę użytkownika
     if (email === "demo@demo.pl" && password === "demo123") {
       const fakeUser = { email, role: "user" };
       setUser(fakeUser);
       localStorage.setItem("user", JSON.stringify(fakeUser));
       return true;
     }
+    // FAKE – dodajemy logikę admina
+    if (email === "admin@example.com" && password === "admin123") {
+      const adminUser = { email, role: "admin" };
+      setUser(adminUser);
+      localStorage.setItem("user", JSON.stringify(adminUser));
+      return true;
+    }
+
     return false;
   };
+
+  
+
    /*
   try {
     const res = await fetch("http://localhost:8080/api/login", {
@@ -73,3 +84,5 @@ export const UserProvider = ({ children }) => {
 
 // Hook pomocniczy
 export const useUser = () => useContext(UserContext);
+
+

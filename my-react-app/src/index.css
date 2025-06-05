@@ -106,3 +106,13 @@ body, .dashboard-container, .accordion-chart {
   transition: background 0.3s ease, color 0.3s ease;
 }
 
+@media (prefers-color-scheme: dark){
+  body{
+    background-color: white !important;
+    color: black !important;
+  }
+  input, textarea, select, button{
+    background-color: white !important;
+    color: black !important;
+  }
+}
