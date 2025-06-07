@@ -2,7 +2,6 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-d
 import LoginForm from "./components/LoginForm";
 import RegisterForm from "./components/RegisterForm";
 import Dashboard from "./components/Dashboard";
-import UserDetailsAdmin from "./components/UserDetailsAdmin";
 import ProtectedRoute from "./components/ProtectedRoute";
 import AdminRoute from "./components/AdminRoute";
 import { UserProvider } from "./context/UserContext";
@@ -51,14 +50,6 @@ function App() {
                 < AdminPanel/>
               </AdminRoute>
             }/>
-          <Route
-            path="/admin/user/:id"
-            element={
-              <ProtectedRoute>
-                <UserDetailsAdmin />
-              </ProtectedRoute>
-            }
-          />
         </Routes>
     </UserProvider>
   );

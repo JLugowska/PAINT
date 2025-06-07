@@ -12,6 +12,7 @@ import { useState, useEffect } from "react";
 import LoginButton from "./LoginButton.jsx";
 import "./css/HistoryPage.css"
 import UserMenu from "./UserMenu.jsx";
+import {EditableDataTable} from "./common/EditableTable.jsx";
 
 
 function DataTable({ data }) {
@@ -158,8 +159,14 @@ export default function HistoryPage() {
                     </button>
                 </section>
 
-                <section className="table-section">
-                    <DataTable data={filteredData} />
+                <section className="numerical-data-section">
+                    <h2>Dane numeryczne</h2>
+                    <div className="table-wrapper">
+                        <EditableDataTable
+                            data={filteredData}
+                            onDataUpdate={() => {}} //TODO implement update logic for user
+                        />
+                    </div>
                 </section>
             </div>
         </div>

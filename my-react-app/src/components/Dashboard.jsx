@@ -1,17 +1,20 @@
-import { useNavigate } from "react-router-dom";
 import { useUser } from "../context/UserContext";
 import { useStats, filterData, demoPowerData, demoEnergyData, demoVoltageData, demoCurrentData } from "../context/StatsContext";
 import {useEffect, useState} from "react";
 import "./css/Dashboard.css";
 import AccordionChart from "../components/AccordionChart";
-import LoginButton from "./LoginButton.jsx";
 import UserMenu from "./UserMenu.jsx";
+import {useDarkMode} from "./common/CommonHooks.jsx";
 
 export default function Dashboard() {
-//  const { logout, user } = useUser();
-  const navigate = useNavigate();
   const { stats, setStats } = useStats();
   const { user } = useUser();
+
+  const { isDarkMode, updateFromPower } = useDarkMode({
+    storageKey: 'dashboardDarkMode' // customize storage key
+  });
+
+
   const [filteredData, setFilteredData] = useState({
     voltage: demoVoltageData,
     power: demoPowerData,
@@ -25,12 +28,11 @@ export default function Dashboard() {
 
 //dark mode
   useEffect(() => {
-  if (stats.power > 90) { //do zmiany jak ustalimy próg
-    document.body.classList.add("dark-mode");
-  } else {
-    document.body.classList.remove("dark-mode");
-  }
-}, [stats.power]);
+    if (stats.power !== undefined) {
+      updateFromPower(stats.power);
+    }
+  }, [stats.power, updateFromPower]);
+
 
 
 //funkcja przygotowana dka backend(trzeba uzupełnić api do odświeżania)
@@ -98,10 +100,15 @@ export default function Dashboard() {
 
 
   return (
-    <div className="dashboard-container">
+      <div className={`dashboard-container ${isDarkMode ? 'dark-content' : ''}`}>
       <UserMenu />
       <header className="dashboard-header">
         <h1 className="dasboard-title">Witaj, {user?.email}!</h1>
+        <div className="power-indicator">
+          Aktualna moc: {stats.power}W
+          {isDarkMode && <span className="dark-mode-badge">Tryb ciemny</span>}
+        </div>
+
       </header>
       <div className="dashboard-content">
         <section className="stats-section">
@@ -138,9 +145,8 @@ export default function Dashboard() {
         </section>
 
         <section className="charts-section">
-          <h2>Wykresy (demo)</h2>
+          <h2>Wykresy</h2>
 
-          {/* --- Napięcie --- */}
           <AccordionChart
             title="Wykres napięcia [V]"
             id="voltage"
@@ -149,7 +155,6 @@ export default function Dashboard() {
             color="#FF00FF"
           />
 
-          {/* --- Moc --- */}
           <AccordionChart
             title="Wykres mocy [W]"
             id="power"
@@ -158,7 +163,6 @@ export default function Dashboard() {
             color="#ff0000"
           />
 
-          {/* --- Energia --- */}
           <AccordionChart
             title="Wykres energii [Wh]"
             id="energy"
@@ -167,7 +171,6 @@ export default function Dashboard() {
             color="#ffb600"
           />
 
-          {/* --- Natężenie LED/Halogen --- */}
           <AccordionChart
             title="Natężenie prądu: LED vs Halogeny [A]"
             id="current"

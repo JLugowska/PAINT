@@ -1,5 +1,4 @@
 import { useNavigate } from "react-router-dom";
-import { useUser } from "../context/UserContext";
 import { useStats, demoCurrentData, demoVoltageData, demoEnergyData, demoPowerData } from "../context/StatsContext";
 import { useEffect } from "react";
 import "./css/Dashboard.css";
@@ -7,10 +6,6 @@ import AccordionChart from "../components/AccordionChart";
 import LoginButton from "./LoginButton.jsx";
 
 export default function DefaultDashboard() {
-//  const { logout, user } = useUser();
-    const navigate = useNavigate();
-
-
 
 //funkcja przygotowana dka backend(trzeba uzupełnić api do odświeżania)
 //   async function fetchLatestSample() {
@@ -71,21 +66,9 @@ export default function DefaultDashboard() {
                 <h1 className="dasboard-title">Monitoring zużycia energii</h1>
             </header>
             <div className="dashboard-content">
-                {/*<section className="stats-section">*/}
-                {/*    <h2>Aktualne dane</h2>*/}
-                {/*    <ul>*/}
-                {/*        <li>Napięcie: {stats.voltage} V</li>*/}
-                {/*        <li>Natężenie halogeny: {stats.currentHalogen} A</li>*/}
-                {/*        <li>Natężenie LED-y: {stats.currentLED} A</li>*/}
-                {/*        <li>Moc: {stats.power} W</li>*/}
-                {/*        <li>Zużycie energii: {stats.energy} Wh</li>*/}
-                {/*    </ul>*/}
-                {/*</section>*/}
 
                 <section className="charts-section">
                     <h2>Wykresy (demo)</h2>
-
-                    {/* --- Napięcie --- */}
                     <AccordionChart
                         title="Wykres napięcia [V]"
                         data={demoVoltageData.slice(-12)}
@@ -93,7 +76,6 @@ export default function DefaultDashboard() {
                         color="#FF00FF"
                     />
 
-                    {/* --- Moc --- */}
                     <AccordionChart
                         title="Wykres mocy [W]"
                         data={demoPowerData.slice(-12)}
@@ -101,7 +83,6 @@ export default function DefaultDashboard() {
                         color="#ff0000"
                     />
 
-                    {/* --- Energia --- */}
                     <AccordionChart
                         title="Wykres energii [Wh]"
                         data={demoEnergyData.slice(-12)}
@@ -109,7 +90,6 @@ export default function DefaultDashboard() {
                         color="#ffb600"
                     />
 
-                    {/* --- Natężenie LED/Halogen --- */}
                     <AccordionChart
                         title="Natężenie prądu: LED vs Halogeny [A]"
                         data={demoCurrentData.slice(-12)}
