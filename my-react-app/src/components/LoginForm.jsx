@@ -64,7 +64,7 @@ export default function LoginForm() {
           <button className="link-button" onClick={() => navigate("/register")}>
             Zarejestruj się
           </button>
-          <button className="link-button" onClick={() => alert("Przypomnienie hasła wkrótce!")}>
+          <button className="link-button" onClick={() => navigate("/reset-password")}>
             Nie pamiętasz hasła?
           </button>
         </div>

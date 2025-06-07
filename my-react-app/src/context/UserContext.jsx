@@ -69,6 +69,12 @@ export const UserProvider = ({ children }) => {
   }
   */
 
+  const resetPassword = async (email, newPassword) => {
+    // FAKE – zmień na prawdziwe
+    console.log("Resetowanie hasła dla:", email);
+    return true;
+  }
+
 
   const logout = () => {
     setUser(null);
@@ -76,7 +82,7 @@ export const UserProvider = ({ children }) => {
   };
 
   return (
-    <UserContext.Provider value={{ user, login, logout, register }}>
+    <UserContext.Provider value={{ user, login, logout, register, resetPassword }}>
       {children}
     </UserContext.Provider>
   );

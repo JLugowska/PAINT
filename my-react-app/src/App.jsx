@@ -8,6 +8,7 @@ import AdminRoute from "./components/AdminRoute";
 import { UserProvider } from "./context/UserContext";
 import HistoryPage from "./components/HistoryPage";
 import AdminPanel from "./components/AdminPanel";
+import PasswordResetForm from "./components/PasswordResetForm";
 
 function App() {
   return (
@@ -17,6 +18,7 @@ function App() {
           <Route path="/" element={<Navigate to="/login" />} />
           <Route path="/login" element={<LoginForm />} />
           <Route path="/register" element={<RegisterForm />} />
+          <Route path="/reset-password" element={<PasswordResetForm />} />
           {/* Ochrona dashboardu */}
           <Route
             path="/dashboard"
