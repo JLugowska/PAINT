@@ -3,6 +3,7 @@ import UserManagement from './UserManagement';
 import EnergyEditor from './EnergyEditor';
 import MonitoringPanel from './MonitoringPanel';
 import { useUser } from '../context/UserContext';
+import UserMenu from "./UserMenu.jsx";
 
 export default function AdminPanel() {
   const { user } = useUser();
@@ -40,6 +41,7 @@ export default function AdminPanel() {
   return (
     <div style={{ padding: "2rem", maxWidth: "1200px", margin: "0 auto" }}>
       <h1 style={{ marginBottom: "1.5rem" }}>Panel administratora</h1>
+        <UserMenu/>
       
       <div style={{ 
         display: "flex",

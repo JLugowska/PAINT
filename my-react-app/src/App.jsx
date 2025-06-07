@@ -9,16 +9,18 @@ import { UserProvider } from "./context/UserContext";
 import HistoryPage from "./components/HistoryPage";
 import AdminPanel from "./components/AdminPanel";
 import PasswordResetForm from "./components/PasswordResetForm";
+import DefaultDashboard from "./components/DefaultDashboard.jsx";
+import UserProfile from "./components/UserProfile.jsx";
 
 function App() {
   return (
     <UserProvider>
 
         <Routes>
-          <Route path="/" element={<Navigate to="/login" />} />
+          <Route path="/" element={<DefaultDashboard />} />
           <Route path="/login" element={<LoginForm />} />
           <Route path="/register" element={<RegisterForm />} />
-          <Route path="/reset-password" element={<PasswordResetForm />} />
+          <Route path="/change-password" element={<PasswordResetForm />} />
           {/* Ochrona dashboardu */}
           <Route
             path="/dashboard"
@@ -27,7 +29,13 @@ function App() {
                 <Dashboard />
               </ProtectedRoute>
             } />
-          {/* Ochrona history */}
+            <Route path="/profile" element={
+                <ProtectedRoute>
+                    <UserProfile />
+                </ProtectedRoute>
+            } />
+
+            {/* Ochrona history */}
           <Route
             path="/history"
             element={

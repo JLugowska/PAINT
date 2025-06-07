@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useUser } from "../context/UserContext";
-import "./LoginForm.css";
+import "./css/LoginForm.css";
 
 export default function PasswordResetForm() {
   const [email, setEmail] = useState("");

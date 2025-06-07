@@ -2,7 +2,7 @@ import { useState } from "react";
 import { ResponsiveContainer, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip } from "recharts";
 
 export default function AccordionChart({ title, data, dataKey, color, multipleLines }) {
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(true);
 
   return (
     <div className="accordion-chart">

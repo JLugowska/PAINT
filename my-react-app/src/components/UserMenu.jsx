@@ -2,7 +2,7 @@ import { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useUser } from "../context/UserContext";
 import { useLocation } from "react-router-dom";
-import "./UserMenu.css";
+import "./css/UserMenu.css";
 
 
 export default function UserMenu() {
@@ -36,7 +36,10 @@ export default function UserMenu() {
                     {location.pathname !== "/history" && (
                         <button onClick={() => navigate("/history")}>Historia</button>
                     )}
-                    <button onClick={() => { logout(); navigate("/login"); }}>Wyloguj</button>
+                    {location.pathname !== "/profile" && (
+                        <button onClick={() => navigate("/profile")}>Profil</button>
+                    )}
+                    <button onClick={() => { logout(); navigate("/"); }}>Wyloguj</button>
                 </div>
 
             )}

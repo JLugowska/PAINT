@@ -1,16 +1,27 @@
 import { useNavigate } from "react-router-dom";
 import { useUser } from "../context/UserContext";
-import { useStats } from "../context/StatsContext";
-import { useEffect } from "react";
-import "./Dashboard.css";
+import { useStats, filterData, demoPowerData, demoEnergyData, demoVoltageData, demoCurrentData } from "../context/StatsContext";
+import {useEffect, useState} from "react";
+import "./css/Dashboard.css";
 import AccordionChart from "../components/AccordionChart";
-import UserMenu from "./UserMenu";
+import LoginButton from "./LoginButton.jsx";
+import UserMenu from "./UserMenu.jsx";
 
 export default function Dashboard() {
 //  const { logout, user } = useUser();
   const navigate = useNavigate();
   const { stats, setStats } = useStats();
   const { user } = useUser();
+  const [filteredData, setFilteredData] = useState({
+    voltage: demoVoltageData,
+    power: demoPowerData,
+    energy: demoEnergyData,
+    current: demoCurrentData
+  });
+
+  const [startDate, setStartDate] = useState("2025-06-07T12:00");
+  const [endDate, setEndDate] = useState("2025-06-07T13:00");
+
 
 //dark mode
   useEffect(() => {
@@ -20,43 +31,6 @@ export default function Dashboard() {
     document.body.classList.remove("dark-mode");
   }
 }, [stats.power]);
-
-  const demoVoltageData = [
-    { time: "10:00", voltage: 60 },
-    { time: "10:05", voltage: 231 },
-    { time: "10:10", voltage: 230 },
-    { time: "10:15", voltage: 150 },
-    { time: "10:20", voltage: 230 },
-    { time: "10:25", voltage: 232 },
-    { time: "10:30", voltage: 229 },
-  ];
-
-  const demoPowerData = [
-    { time: "10:00", power: 85 },
-    { time: "10:05", power: 90 },
-    { time: "10:10", power: 92 },
-    { time: "10:15", power: 95 },
-    { time: "10:20", power: 94 },
-    { time: "10:25", power: 91 },
-  ];
-
-  const demoEnergyData = [
-    { time: "10:00", energy: 0.12 },
-    { time: "10:05", energy: 0.17 },
-    { time: "10:10", energy: 0.21 },
-    { time: "10:15", energy: 0.27 },
-    { time: "10:20", energy: 0.34 },
-    { time: "10:25", energy: 0.42 },
-  ];
-
-  const demoCurrentData = [
-    { time: "10:00", led: 0.12, halogen: 0.34 },
-    { time: "10:05", led: 0.13, halogen: 0.35 },
-    { time: "10:10", led: 0.14, halogen: 0.36 },
-    { time: "10:15", led: 0.13, halogen: 0.37 },
-    { time: "10:20", led: 0.15, halogen: 0.39 },
-    { time: "10:25", led: 0.14, halogen: 0.38 },
-  ];
 
 
 //funkcja przygotowana dka backend(trzeba uzupełnić api do odświeżania)
@@ -111,6 +85,18 @@ export default function Dashboard() {
 //   return () => clearInterval(interval);
 // }, []);
 
+  const handleDaterange = (e) => {
+    e.preventDefault();
+
+    setFilteredData({
+      voltage: filterData(demoVoltageData, startDate, endDate),
+      power: filterData(demoPowerData, startDate, endDate),
+      energy: filterData(demoEnergyData, startDate, endDate),
+      current: filterData(demoCurrentData, startDate, endDate)
+    });
+  };
+
+
   return (
     <div className="dashboard-container">
       <UserMenu />
@@ -119,14 +105,36 @@ export default function Dashboard() {
       </header>
       <div className="dashboard-content">
         <section className="stats-section">
-          <h2>Aktualne dane</h2>
-          <ul>
-            <li>Napięcie: {stats.voltage} V</li>
-            <li>Natężenie halogeny: {stats.currentHalogen} A</li>
-            <li>Natężenie LED-y: {stats.currentLED} A</li>
-            <li>Moc: {stats.power} W</li>
-            <li>Zużycie energii: {stats.energy} Wh</li>
-          </ul>
+          <h2>Wybierz zakres czasowy danych</h2>
+
+          <form onSubmit={handleDaterange} className="date-form">
+            <div className="form-group">
+              <label>Data początku:</label>
+              <input
+                  type="datetime-local"
+                  value={startDate}
+                  onChange={(e) => setStartDate(e.target.value)}
+                  required
+                  className="form-input"
+              />
+            </div>
+
+            <div className="form-group">
+              <label>Data końca:</label>
+              <input
+                  type="datetime-local"
+                  value={endDate}
+                  i
+                  onChange={(e) => setEndDate(e.target.value)}
+                  required
+                  className="form-input"
+              />
+            </div>
+
+            <button type="submit" className="login-button">
+              Zatwierdź
+            </button>
+          </form>
         </section>
 
         <section className="charts-section">
@@ -135,7 +143,8 @@ export default function Dashboard() {
           {/* --- Napięcie --- */}
           <AccordionChart
             title="Wykres napięcia [V]"
-            data={demoVoltageData}
+            id="voltage"
+            data={filteredData.voltage}
             dataKey="voltage"
             color="#FF00FF"
           />
@@ -143,7 +152,8 @@ export default function Dashboard() {
           {/* --- Moc --- */}
           <AccordionChart
             title="Wykres mocy [W]"
-            data={demoPowerData}
+            id="power"
+            data={filteredData.power}
             dataKey="power"
             color="#ff0000"
           />
@@ -151,7 +161,8 @@ export default function Dashboard() {
           {/* --- Energia --- */}
           <AccordionChart
             title="Wykres energii [Wh]"
-            data={demoEnergyData}
+            id="energy"
+            data={filteredData.energy}
             dataKey="energy"
             color="#ffb600"
           />
@@ -159,7 +170,8 @@ export default function Dashboard() {
           {/* --- Natężenie LED/Halogen --- */}
           <AccordionChart
             title="Natężenie prądu: LED vs Halogeny [A]"
-            data={demoCurrentData}
+            id="current"
+            data={filteredData.current}
             multipleLines={[
               { dataKey: "led", color: "#00FFFF", label: "LED" },
               { dataKey: "halogen", color: "#00ff00", label: "Halogeny" },

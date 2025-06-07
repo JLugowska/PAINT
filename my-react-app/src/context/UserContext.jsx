@@ -70,6 +70,46 @@ export const UserProvider = ({ children }) => {
   }
   */
 
+  const updateUser = async (userData) => {
+    try {
+      // FAKE - Replace with actual API call
+      const updatedUser = {
+        ...user,
+        email: userData.email,
+        name: userData.name,
+        surname: userData.surname,
+      };
+
+      setUser(updatedUser);
+      localStorage.setItem("user", JSON.stringify(updatedUser));
+      return true;
+
+      /*
+      const response = await fetch('/api/user/update', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        },
+        body: JSON.stringify(userData)
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to update user');
+      }
+
+      const updatedUser = await response.json();
+      setUser(updatedUser);
+      localStorage.setItem("user", JSON.stringify(updatedUser));
+      return true;
+      */
+    } catch (error) {
+      console.error('Error updating user:', error);
+      return false;
+    }
+  };
+
+
   const resetPassword = async (email, newPassword) => {
     // FAKE – zmień na prawdziwe
     console.log("Resetowanie hasła dla:", email);
@@ -83,7 +123,7 @@ export const UserProvider = ({ children }) => {
   };
 
   return (
-    <UserContext.Provider value={{ user, login, logout, register, resetPassword }}>
+    <UserContext.Provider value={{ user, login, logout, register, resetPassword, updateUser }}>
       {children}
     </UserContext.Provider>
   );
