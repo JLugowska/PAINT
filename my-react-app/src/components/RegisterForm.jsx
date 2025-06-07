@@ -21,8 +21,19 @@ export default function RegisterForm() {
       return;
     }
 
-    await register({ name, surname, email, password });
+    // Walidacja adresu e-mail
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!emailRegex.test(email)) {
+    setError("Wprowadź poprawny adres e-mail.");
+    return;
+  }
+
+    const success = await register({ name, surname, email, password });
+    if (success) {
     navigate("/login");
+  } else {
+    setError("Rejestracja nie powiodła się.");
+  }
   };
 
 

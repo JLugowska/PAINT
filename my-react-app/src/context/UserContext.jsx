@@ -49,11 +49,12 @@ export const UserProvider = ({ children }) => {
   }
   */
 
-  const register = async ({ email, password, name, surname }) => {
-    // FAKE – zmień na prawdziwe
-    console.log("Rejestracja użytkownika:", { email, password, name, surname });
-    return true;
-  };
+ const register = async ({ email, password, name, surname }) => {
+  const newUser = { email, role: "user", name, surname }; // np. domyślnie użytkownik
+  setUser(newUser);
+  localStorage.setItem("user", JSON.stringify(newUser));
+  return true;
+};
   /*
   try {
     const res = await fetch("http://localhost:8080/api/register", {
