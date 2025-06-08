@@ -19,7 +19,6 @@ function App() {
           <Route path="/" element={<DefaultDashboard />} />
           <Route path="/login" element={<LoginForm />} />
           <Route path="/register" element={<RegisterForm />} />
-          <Route path="/change-password" element={<PasswordResetForm />} />
           {/* Ochrona dashboardu */}
           <Route
             path="/dashboard"

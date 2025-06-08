@@ -1,4 +1,3 @@
-
 export const DateRangeForm = ({ startDate, setStartDate, endDate, setEndDate, onSubmit }) => (
     <form onSubmit={onSubmit} className="date-form">
         <div className="form-group">

@@ -7,7 +7,8 @@ import {
     demoEnergyData,
     demoPowerData,
     demoVoltageData,
-    filterData
+    filterData,
+    getDataFromApi
 } from "../context/StatsContext";
 import Modal from "./Modal.jsx";
 import {data} from "react-router-dom";
@@ -63,11 +64,7 @@ export default function AdminPanel() {
     const [confirmPassword, setConfirmPassword] = useState("");
     const [startDate, setStartDate] = useState("2025-06-07T12:00");
     const [endDate, setEndDate] = useState("2025-06-07T13:00");
-    const [filteredData, setFilteredData] = useState({
-        voltage: demoVoltageData,
-        power: demoPowerData,
-        energy: demoEnergyData
-    });
+    const [filteredData, setFilteredData] = useState(getDataFromApi());
 
     const [activeTab, setActiveTab] = useState('users');
     const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false);
@@ -163,11 +160,7 @@ export default function AdminPanel() {
 
     const handleDateRange = (e) => {
         e.preventDefault();
-        setFilteredData({
-            voltage: filterData(demoVoltageData, startDate, endDate),
-            power: filterData(demoPowerData, startDate, endDate),
-            energy: filterData(demoEnergyData, startDate, endDate)
-        });
+        setFilteredData(getDataFromApi(startDate, endDate));
     };
 
     const renderUsersTab = () => (
@@ -265,7 +258,6 @@ export default function AdminPanel() {
                 setEndDate={setEndDate}
                 onFilter={handleDateRange}
                 onExport={handleExport}
-
             />
 
             <section className="numerical-data-section">

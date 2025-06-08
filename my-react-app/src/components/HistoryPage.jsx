@@ -1,44 +1,24 @@
 import {data, useNavigate} from "react-router-dom";
 import {
-    demoData,
-    filterData,
+    getDataFromApi,
     useStats
 } from "../context/StatsContext";
 import { useState, useEffect } from "react";
-import LoginButton from "./LoginButton.jsx";
 import "./css/HistoryPage.css"
 import UserMenu from "./UserMenu.jsx";
 import {EditableDataTable} from "./common/EditableTable.jsx";
 
 export default function HistoryPage() {
     const { stats, setStats } = useStats();
-    const [filteredData, setFilteredData] = useState({
-        time: demoData.time,
-        voltage: demoData.voltage,
-        power: demoData.power,
-        energy: demoData.energy
-    });
+    const [filteredData, setFilteredData] = useState(getDataFromApi());
 
     const [startDate, setStartDate] = useState("2025-06-07T12:00");
     const [endDate, setEndDate] = useState("2025-06-07T13:00");
 
     const handleDateRange = (e) => {
         e.preventDefault();
-        setFilteredData({
-            voltage: filterData(demoData.voltage, startDate, endDate),
-            power: filterData(demoData.power, startDate, endDate),
-            energy: filterData(demoData.energy, startDate, endDate)
-        });
+        setFilteredData(getDataFromApi(startDate, endDate));
     };
-
-    //dark mode
-    useEffect(() => {
-    if (stats.power > 90) {
-      document.body.classList.add("dark-mode");
-    } else {
-      document.body.classList.remove("dark-mode");
-    }
-  }, [stats.power]);
 
     // Eksport danych do CSV
     const handleExport = () => {

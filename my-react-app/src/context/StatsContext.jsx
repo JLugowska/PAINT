@@ -2,6 +2,13 @@ import { createContext, useContext, useState } from "react";
 
 export const StatsContext = createContext();
 
+ function formatDateTimeLocalToString(datetimeLocalValue) {
+            const date = new Date(datetimeLocalValue);
+            const pad = n => n.toString().padStart(2, '0');
+            return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}%20`+
+            `${pad(date.getHours())}:${pad(date.getMinutes())}:${pad(date.getSeconds())}`;
+        }
+
 // Utility function to transform API data into component format
 export const transformApiData = (apiData) => {
   if (!apiData || !Array.isArray(apiData)) return {
@@ -49,6 +56,25 @@ const demoApiData = [
   }
   // ... more data
 ];
+
+export const getDataFromApi = async (start=null, end=null) => {
+  const startFormatted = formatDateTimeLocalToString(start);
+  const endFormatted = formatDateTimeLocalToString(end);
+  const url="http://152.70.175.119:8080/api/feeds" + (start && end ? `/range?start=${startFormatted}&end=${endFormatted}` : "");
+  try {
+    const response = await fetch(url);
+    if (!response.ok) {
+      throw new Error(`Error fetching data: ${response.statusText}`);
+    }
+    else{
+    const data = await response.json();
+    }
+  } catch (error) {
+    console.error("Failed to fetch data from API:", error); 
+    const data = null;
+  }
+  return transformApiData(data)
+};
 
 // Transform demo data
 export const demoData = transformApiData(demoApiData);
