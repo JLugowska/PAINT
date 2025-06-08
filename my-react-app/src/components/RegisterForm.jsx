@@ -44,6 +44,11 @@ export default function RegisterForm() {
 
   return (
     <div className="login-container">
+       <div className="user-menu">
+            <button onClick={() => navigate("/")} className="menu-toggle">
+                ← Wróć
+            </button>
+        </div>
       <div className="login-box">
         <h2 className="login-title">Rejestracja</h2>
 
