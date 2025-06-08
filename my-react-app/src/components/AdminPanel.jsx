@@ -66,8 +66,7 @@ export default function AdminPanel() {
     const [filteredData, setFilteredData] = useState({
         voltage: demoVoltageData,
         power: demoPowerData,
-        energy: demoEnergyData,
-        current: demoCurrentData
+        energy: demoEnergyData
     });
 
     const [activeTab, setActiveTab] = useState('users');
@@ -122,12 +121,6 @@ export default function AdminPanel() {
                 case 'energy':
                     newData.energy[rowIndex].energy = newValue;
                     break;
-                case 'currentLED':
-                    newData.current[rowIndex].led = newValue;
-                    break;
-                case 'currentHalogen':
-                    newData.current[rowIndex].halogen = newValue;
-                    break;
             }
             return newData;
         });
@@ -173,8 +166,7 @@ export default function AdminPanel() {
         setFilteredData({
             voltage: filterData(demoVoltageData, startDate, endDate),
             power: filterData(demoPowerData, startDate, endDate),
-            energy: filterData(demoEnergyData, startDate, endDate),
-            current: filterData(demoCurrentData, startDate, endDate)
+            energy: filterData(demoEnergyData, startDate, endDate)
         });
     };
 
@@ -257,14 +249,7 @@ export default function AdminPanel() {
                         dataKey="energy"
                         color="#ffb600"
                     />
-                    <AccordionChart
-                        title="Natężenie prądu: LED vs Halogeny [A]"
-                        data={filteredData.current}
-                        multipleLines={[
-                            { dataKey: "led", color: "#00FFFF", label: "LED" },
-                            { dataKey: "halogen", color: "#00ff00", label: "Halogeny" },
-                        ]}
-                    />
+                    
                 </div>
             </section>
         </div>

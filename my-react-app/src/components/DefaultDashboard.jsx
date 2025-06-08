@@ -90,14 +90,6 @@ export default function DefaultDashboard() {
                         color="#ffb600"
                     />
 
-                    <AccordionChart
-                        title="Natężenie prądu: LED vs Halogeny [A]"
-                        data={demoCurrentData.slice(-12)}
-                        multipleLines={[
-                            { dataKey: "led", color: "#00FFFF", label: "LED" },
-                            { dataKey: "halogen", color: "#00ff00", label: "Halogeny" },
-                        ]}
-                    />
 
                 </section>
             </div>
