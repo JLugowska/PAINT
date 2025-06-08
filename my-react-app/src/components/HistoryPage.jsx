@@ -1,43 +1,26 @@
-import {data, useNavigate} from "react-router-dom";
-import {
-    getDataFromApi,
-    useStats
-} from "../context/StatsContext";
-import { useState, useEffect } from "react";
-import "./css/HistoryPage.css"
+import React, { useState, useEffect } from 'react';
+import { getDataFromApi } from "../context/StatsContext";
 import UserMenu from "./UserMenu.jsx";
-import {EditableDataTable} from "./common/EditableTable.jsx";
+import { EditableDataTable } from "./common/EditableTable.jsx";
 
 export default function HistoryPage() {
-    const { stats, setStats } = useStats();
-    const [filteredData, setFilteredData] = useState(getDataFromApi());
+    const [filteredData, setFilteredData] = useState(null);
+    const [startDate, setStartDate] = useState("2025-06-08T10:00");
+    const [endDate, setEndDate] = useState("2025-06-08T16:00");
 
-    const [startDate, setStartDate] = useState("2025-06-07T12:00");
-    const [endDate, setEndDate] = useState("2025-06-07T13:00");
+    useEffect(() => {
+        // Initial data load
+        setFilteredData(getDataFromApi());
+    }, []);
 
     const handleDateRange = (e) => {
         e.preventDefault();
         setFilteredData(getDataFromApi(startDate, endDate));
     };
 
-    // Eksport danych do CSV
-    const handleExport = () => {
-        const csv = [
-            ["Godzina", "Napięcie [V]", "Moc [W]", "Energia [Wh]"],
-            ...data.map(d => [d.time, d.voltage, d.power, d.energy]),
-        ]
-            .map(row => row.join(","))
-            .join("\n");
-
-        const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
-        const url = URL.createObjectURL(blob);
-
-        const link = document.createElement("a");
-        link.href = url;
-        link.setAttribute("download", "historia_pomiarow.csv");
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
+    const handleDataUpdate = (rowIndex, field, value) => {
+        // Implement your update logic here
+        console.log(`Updating row ${rowIndex}, field ${field} with value ${value}`);
     };
 
     return (
@@ -78,7 +61,7 @@ export default function HistoryPage() {
                         </button>
                     </form>
 
-                    <button onClick={handleExport} className="export-button">
+                    <button  className="export-button">
                         Eksportuj do CSV
                     </button>
                 </section>
@@ -86,16 +69,16 @@ export default function HistoryPage() {
                 <section className="numerical-data-section">
                     <h2>Dane numeryczne</h2>
                     <div className="table-wrapper">
-                        <EditableDataTable
-                            data={filteredData}
-                            isEditable={true}
-                            onDataUpdate={() => {}} //TODO implement update logic for user
-                        />
+                        {filteredData && (
+                            <EditableDataTable
+                                data={filteredData}
+                                isEditable={true}
+                                onDataUpdate={handleDataUpdate}
+                            />
+                        )}
                     </div>
                 </section>
             </div>
         </div>
     );
-
-
 }

@@ -1,41 +1,78 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { api } from '../../services/api.jsx';
 import '../css/EditableTable.css';
 
-export function EditableDataTable({ data, onDataUpdate, isEditable = false }) {
+export function EditableDataTable({ startDate, endDate, onDataUpdate, isEditable = false }) {
     const [editCell, setEditCell] = useState(null);
     const [editValue, setEditValue] = useState('');
+    const [tableData, setTableData] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
 
-    // Format data for table display
-    const formatTableData = () => {
-        if (!data || !data.time) return [];
+    useEffect(() => {
+        const loadData = async () => {
+            try {
+                setLoading(true);
+                let data;
+                if (startDate && endDate) {
+                    data = await api.getFeedsInRange(startDate, endDate);
+                } else {
+                    data = await api.getFeeds();
+                }
+                setTableData(Array.isArray(data) ? data : []);
+            } catch (error) {
+                console.error('Error loading data:', error);
+                setError('Failed to load data');
+                setTableData([]);
+            } finally {
+                setLoading(false);
+            }
+        };
 
-        return data.time.map((time, index) => ({
-            time,
-            voltage: data.voltage[index]?.toFixed(2) || '-',
-            power: data.power[index]?.toFixed(2) || '-',
-            energy: data.energy[index]?.toFixed(2) || '-'
-        }));
-    };
+        loadData();
+    }, [startDate, endDate]);
 
-    const handleCellClick = (rowIndex, column) => {
-        if (!isEditable) return;
-
-        setEditCell({ rowIndex, column });
-        const value = data[column][rowIndex];
-        setEditValue(value?.toString() || '');
-    };
-
-    const handleCellUpdate = (rowIndex, column) => {
-        const numericValue = parseFloat(editValue);
-        if (isNaN(numericValue)) {
+    const handleCellUpdate = async (rowIndex, field) => {
+        const newValue = editValue;
+        if (!newValue) {
             setEditCell(null);
             setEditValue('');
             return;
         }
 
-        onDataUpdate(rowIndex, column, numericValue);
+        try {
+            const updatedFeed = {
+                ...tableData[rowIndex],
+                [field]: newValue
+            };
+
+            await api.updateFeed(updatedFeed);
+            await api.pushEdits(); // Push changes to ThingSpeak
+
+            // Update local state
+            setTableData(prevData => {
+                const newData = [...prevData];
+                newData[rowIndex] = updatedFeed;
+                return newData;
+            });
+
+            onDataUpdate?.(rowIndex, field, newValue);
+        } catch (error) {
+            console.error('Error updating data:', error);
+            // You might want to show an error message to the user
+        }
+
         setEditCell(null);
         setEditValue('');
+    };
+
+
+    const handleCellClick = (rowIndex, column) => {
+        if (!isEditable) return;
+
+        setEditCell({ rowIndex, column });
+        const value = tableData[rowIndex][column];
+        setEditValue(value?.toString() || '');
     };
 
     const handleKeyPress = (e, rowIndex, column) => {
@@ -47,40 +84,48 @@ export function EditableDataTable({ data, onDataUpdate, isEditable = false }) {
         }
     };
 
-    const tableData = formatTableData();
+    if (loading) {
+        return <div>Loading...</div>;
+    }
+
+    if (!tableData || tableData.length === 0) {
+        return <div>No data available</div>;
+    }
 
     return (
         <div className="editable-table-container">
             <table className="editable-table">
                 <thead>
                 <tr>
-                    <th>Czas</th>
-                    <th>Napięcie [V]</th>
-                    <th>Moc [W]</th>
-                    <th>Energia [Wh]</th>
+                    <th>Time</th>
+                    <th>Entry ID</th>
+                    <th>Field 1</th>
+                    <th>Field 2</th>
+                    <th>Field 3</th>
                 </tr>
                 </thead>
                 <tbody>
                 {tableData.map((row, rowIndex) => (
-                    <tr key={row.time}>
-                        <td>{new Date(row.time).toLocaleString('pl-PL')}</td>
-                        {['voltage', 'power', 'energy'].map((column) => (
+                    <tr key={row.entry_id || rowIndex}>
+                        <td>{row.created_at ? new Date(row.created_at).toLocaleString() : ''}</td>
+                        <td>{row.entry_id}</td>
+                        {['field1', 'field2', 'field3'].map((field) => (
                             <td
-                                key={column}
-                                onClick={() => handleCellClick(rowIndex, column)}
+                                key={field}
+                                onClick={() => handleCellClick(rowIndex, field)}
                                 className={isEditable ? 'editable' : ''}
                             >
-                                {editCell?.rowIndex === rowIndex && editCell?.column === column ? (
+                                {editCell?.rowIndex === rowIndex && editCell?.column === field ? (
                                     <input
-                                        type="number"
+                                        type="text"
                                         value={editValue}
                                         onChange={(e) => setEditValue(e.target.value)}
-                                        onBlur={() => handleCellUpdate(rowIndex, column)}
-                                        onKeyDown={(e) => handleKeyPress(e, rowIndex, column)}
+                                        onBlur={() => handleCellUpdate(rowIndex, field)}
+                                        onKeyDown={(e) => handleKeyPress(e, rowIndex, field)}
                                         autoFocus
                                     />
                                 ) : (
-                                    row[column]
+                                    row[field]
                                 )}
                             </td>
                         ))}

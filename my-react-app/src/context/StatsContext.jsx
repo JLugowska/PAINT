@@ -18,7 +18,6 @@ export const transformApiData = (apiData) => {
     power: [],
     energy: []
   };
-
   const transformed = {
     time: [],
     entry_id: [],
@@ -57,24 +56,28 @@ const demoApiData = [
   // ... more data
 ];
 
-export const getDataFromApi = async (start=null, end=null) => {
+export const getDataFromApi = async (start = null, end = null) => {
   const startFormatted = formatDateTimeLocalToString(start);
   const endFormatted = formatDateTimeLocalToString(end);
-  const url="http://152.70.175.119:8080/api/feeds" + (start && end ? `/range?start=${startFormatted}&end=${endFormatted}` : "");
+
+  let url = "http://152.70.175.119:8080/api/feeds/";
+  if (start && end) {
+    url += `range?start=${startFormatted}&end=${endFormatted}`;
+  }
+
   try {
     const response = await fetch(url);
     if (!response.ok) {
       throw new Error(`Error fetching data: ${response.statusText}`);
     }
-    else{
     const data = await response.json();
-    }
+    return data;
   } catch (error) {
-    console.error("Failed to fetch data from API:", error); 
-    const data = null;
+    console.error("Failed to fetch data from API:", error);
+    return null;
   }
-  return transformApiData(data)
 };
+
 
 // Transform demo data
 export const demoData = transformApiData(demoApiData);
