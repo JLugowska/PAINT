@@ -33,38 +33,42 @@ export function EditableDataTable({ startDate, endDate, onDataUpdate, isEditable
     }, [startDate, endDate]);
 
     const handleCellUpdate = async (rowIndex, field) => {
-        const newValue = editValue;
-        if (!newValue) {
-            setEditCell(null);
-            setEditValue('');
-            return;
-        }
-
-        try {
-            const updatedFeed = {
-                ...tableData[rowIndex],
-                [field]: newValue
-            };
-
-            await api.updateFeed(updatedFeed);
-            await api.pushEdits(); // Push changes to ThingSpeak
-
-            // Update local state
-            setTableData(prevData => {
-                const newData = [...prevData];
-                newData[rowIndex] = updatedFeed;
-                return newData;
-            });
-
-            onDataUpdate?.(rowIndex, field, newValue);
-        } catch (error) {
-            console.error('Error updating data:', error);
-            // You might want to show an error message to the user
-        }
-
+        console.log("🛠 Aktualizacja pola:", { rowIndex, field, editValue });
+    const newValue = editValue;
+    if (newValue === '' || newValue === null) {
         setEditCell(null);
         setEditValue('');
-    };
+        return;
+    }
+
+    try {
+        const updatedFeed = {
+            entry_id: tableData[rowIndex].entry_id,
+            [field]: newValue
+        };
+
+        await api.updateFeed(updatedFeed);
+        await api.pushEdits(); // Jeśli to nadal potrzebne
+
+        // Update local state
+        setTableData(prevData => {
+            const newData = [...prevData];
+            newData[rowIndex] = {
+                ...newData[rowIndex],
+                ...updatedFeed
+            };
+            return newData;
+        });
+
+        onDataUpdate?.(rowIndex, field, newValue);
+    } catch (error) {
+        console.error('Error updating data:', error);
+    }
+
+    setEditCell(null);
+    setEditValue('');
+};
+
 
 
     const handleCellClick = (rowIndex, column) => {

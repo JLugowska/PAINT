@@ -1,4 +1,5 @@
 import { createContext, useContext, useState } from "react";
+import { api } from '../services/api.jsx';
 
 export const UserContext = createContext();
 
@@ -8,122 +9,100 @@ export const UserProvider = ({ children }) => {
     return saved ? JSON.parse(saved) : null;
   });
 
-  const login = async ({ username, password }) => {
-    // FAKE – dodajemy logikę użytkownika
-    if (username === "demo" && password === "demo123") {
-      const fakeUser = { username, role: "user" };
-      setUser(fakeUser);
-      localStorage.setItem("user", JSON.stringify(fakeUser));
-      return true;
-    }
-    // FAKE – dodajemy logikę admina
-    if (username === "admin" && password === "admin123") {
-      const adminUser = { username, role: "admin" };
-      setUser(adminUser);
-      localStorage.setItem("user", JSON.stringify(adminUser));
-      return true;
-    }
-
-    return false;
-  };
-
-  
-
-   /*
+ const login = async ({ username, password }) => {
   try {
-    const res = await fetch("http://localhost:8080/api/login", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email, password }),
-    });
+    const result = await api.login({ login: username, password });
 
-    if (!res.ok) return false;
-
-    const userData = await res.json(); // { email, role, token, ... }
-    setUser(userData);
-    localStorage.setItem("user", JSON.stringify(userData));
-    return true;
-  } catch (err) {
-    console.error("Błąd logowania:", err);
-    return false;
-  }
-  */
-
- const register = async ({ username, email, password, name, surname }) => {
-  const newUser = { username, email, role: "user", name, surname }; // np. domyślnie użytkownik
-  setUser(newUser);
-  localStorage.setItem("user", JSON.stringify(newUser));
-  return true;
-};
-  /*
-  try {
-    const res = await fetch("http://localhost:8080/api/register", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ name, surname, email, password }),
-    });
-
-    return res.ok;
-  } catch (err) {
-    console.error("Błąd rejestracji:", err);
-    return false;
-  }
-  */
-
-  const updateUser = async (userData) => {
-    try {
-      // FAKE - Replace with actual API call
-      const updatedUser = {
-        ...user,
-        email: userData.email,
-        name: userData.name,
-        surname: userData.surname,
-      };
-
-      setUser(updatedUser);
-      localStorage.setItem("user", JSON.stringify(updatedUser));
-      return true;
-
-      /*
-      const response = await fetch('/api/user/update', {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
-        },
-        body: JSON.stringify(userData)
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to update user');
+      if (!result.user || result.errorResponse) {
+        console.error("Błąd logowania:", result.errorResponse?.message);
+        return false;
       }
 
-      const updatedUser = await response.json();
-      setUser(updatedUser);
-      localStorage.setItem("user", JSON.stringify(updatedUser));
+    setUser(result.user);
+      localStorage.setItem("user", JSON.stringify(result.user));
       return true;
-      */
     } catch (error) {
-      console.error('Error updating user:', error);
+      console.error("Błąd logowania:", error);
       return false;
     }
   };
 
+ const register = async (userData) => {
+    try {
+      console.log("Rejestruję z danymi:", userData);
+      const result = await api.createUser({
+      ...userData,
+      role: "USER",
+    });
 
-  const resetPassword = async (username, newPassword) => {
-    // FAKE – zmień na prawdziwe
-    console.log("Resetowanie hasła dla:", username);
-    return true;
-  }
+    
+    console.log("Odpowiedź z createUser:", result); // ← najważniejsze
 
+      if (!result.user || result.errorResponse) {
+        console.error("Błąd rejestracji:", result.errorResponse?.message);
+        return false;
+      }
 
+      setUser(result.user);
+      localStorage.setItem("user", JSON.stringify(result.user));
+      return true;
+    } catch (error) {
+      console.error("Błąd rejestracji:", error);
+      return false;
+    }
+  };
+
+   
+  const updateUser = async (updatedData) => {
+    try {
+      const result = await api.updateUser({
+        _id: user._id,
+        login: user.login,
+        password: updatedData.password, // może chcesz tego unikać, zależnie od API
+        email: updatedData.email,
+        name: updatedData.name,
+        surname: updatedData.surname,
+        role: user.role,
+      });
+
+      if (!result.user || result.errorResponse) {
+        console.error("Błąd aktualizacji:", result.errorResponse?.message);
+        return false;
+      }
+
+    setUser(result.user);
+      localStorage.setItem("user", JSON.stringify(result.user));
+      return true;
+    } catch (error) {
+      console.error("Błąd aktualizacji:", error);
+      return false;
+    }
+  };
+
+const deleteUser = async () => {
+    try {
+      const result = await api.deleteUser(user._id);
+
+      if (!result.user || result.errorResponse) {
+        console.error("Błąd usuwania:", result.errorResponse?.message);
+        return false;
+      }
+
+      setUser(null);
+      localStorage.removeItem("user");
+      return true;
+    } catch (error) {
+      console.error("Błąd usuwania:", error);
+      return false;
+    }
+  };
   const logout = () => {
     setUser(null);
     localStorage.removeItem("user");
   };
 
   return (
-    <UserContext.Provider value={{ user, login, logout, register, resetPassword, updateUser }}>
+    <UserContext.Provider value={{ user, login, logout, register, updateUser, deleteUser }}>
       {children}
     </UserContext.Provider>
   );
