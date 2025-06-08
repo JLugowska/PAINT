@@ -1,9 +1,17 @@
 
+
 .admin-form {
     display: flex;
     flex-direction: column;
     gap: 1rem;
     width: 100%;
+
+    /* Tło */
+  background-image: url("/images/3.jpeg");
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-attachment: fixed;
 }
 
 .users-section {
