@@ -14,7 +14,7 @@ export default function AdminRoute({ children }) {
   }, [user]);
 
   if (isLoading) {
-    return <div>Ładowanie...</div>; // Możesz dodać ładny loader
+    return <div>Ładowanie...</div>;
   }
 
   if (!user || user.role !== "admin") {

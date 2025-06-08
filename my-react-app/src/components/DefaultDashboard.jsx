@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import { useStats, demoCurrentData, demoVoltageData, demoEnergyData, demoPowerData } from "../context/StatsContext";
+import { useStats, demoVoltageData, demoEnergyData, demoPowerData } from "../context/StatsContext";
 import { useEffect } from "react";
 import "./css/Dashboard.css";
 import AccordionChart from "../components/AccordionChart";

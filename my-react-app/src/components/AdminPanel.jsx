@@ -4,7 +4,6 @@ import AdminMenu from "./AdminMenu";
 import AccordionChart from "./AccordionChart";
 import "./css/AdminPanel.css";
 import {
-    demoCurrentData,
     demoEnergyData,
     demoPowerData,
     demoVoltageData,

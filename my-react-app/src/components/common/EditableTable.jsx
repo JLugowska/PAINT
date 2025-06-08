@@ -1,75 +1,83 @@
-import {useState} from "react";
+import React, { useState } from 'react';
+import '../css/EditableTable.css';
 
-export const EditableDataTable = ({ data, onDataUpdate }) => {
+export function EditableDataTable({ data, onDataUpdate, isEditable = false }) {
     const [editCell, setEditCell] = useState(null);
-    const [editValue, setEditValue] = useState("");
+    const [editValue, setEditValue] = useState('');
 
-    // Combine and format the data into a single array of records
+    // Format data for table display
     const formatTableData = () => {
-        if (!data) return [];
+        if (!data || !data.time) return [];
 
-        return data.voltage.map((voltageEntry, index) => {
-            return {
-                time: voltageEntry.time,
-                voltage: voltageEntry.voltage.toFixed(2),
-                power: data.power[index]?.power.toFixed(2) || '-',
-                energy: data.energy[index]?.energy.toFixed(2) || '-',
-                currentLED: data.current[index]?.led.toFixed(2) || '-',
-                currentHalogen: data.current[index]?.halogen.toFixed(2) || '-'
-            };
-        });
+        return data.time.map((time, index) => ({
+            time,
+            voltage: data.voltage[index]?.toFixed(2) || '-',
+            power: data.power[index]?.toFixed(2) || '-',
+            energy: data.energy[index]?.toFixed(2) || '-'
+        }));
+    };
+
+    const handleCellClick = (rowIndex, column) => {
+        if (!isEditable) return;
+
+        setEditCell({ rowIndex, column });
+        const value = data[column][rowIndex];
+        setEditValue(value?.toString() || '');
+    };
+
+    const handleCellUpdate = (rowIndex, column) => {
+        const numericValue = parseFloat(editValue);
+        if (isNaN(numericValue)) {
+            setEditCell(null);
+            setEditValue('');
+            return;
+        }
+
+        onDataUpdate(rowIndex, column, numericValue);
+        setEditCell(null);
+        setEditValue('');
+    };
+
+    const handleKeyPress = (e, rowIndex, column) => {
+        if (e.key === 'Enter') {
+            handleCellUpdate(rowIndex, column);
+        } else if (e.key === 'Escape') {
+            setEditCell(null);
+            setEditValue('');
+        }
     };
 
     const tableData = formatTableData();
 
-    const handleDoubleClick = (rowIndex, column, value) => {
-        setEditCell({ rowIndex, column });
-        setEditValue(value);
-    };
-
-    const handleEdit = (e) => {
-        if (e.key === 'Enter') {
-            const newValue = parseFloat(editValue);
-            if (!isNaN(newValue)) {
-                onDataUpdate(editCell.rowIndex, editCell.column, newValue);
-            }
-            setEditCell(null);
-        } else if (e.key === 'Escape') {
-            setEditCell(null);
-        }
-    };
-
     return (
         <div className="editable-table-container">
-            <table className="data-table">
+            <table className="editable-table">
                 <thead>
                 <tr>
                     <th>Czas</th>
                     <th>Napięcie [V]</th>
                     <th>Moc [W]</th>
                     <th>Energia [Wh]</th>
-                    <th>Prąd LED [A]</th>
-                    <th>Prąd Halogeny [A]</th>
                 </tr>
                 </thead>
                 <tbody>
                 {tableData.map((row, rowIndex) => (
-                    <tr key={rowIndex}>
+                    <tr key={row.time}>
                         <td>{new Date(row.time).toLocaleString('pl-PL')}</td>
-                        {['voltage', 'power', 'energy', 'currentLED', 'currentHalogen'].map((column) => (
+                        {['voltage', 'power', 'energy'].map((column) => (
                             <td
                                 key={column}
-                                onDoubleClick={() => handleDoubleClick(rowIndex, column, row[column])}
+                                onClick={() => handleCellClick(rowIndex, column)}
+                                className={isEditable ? 'editable' : ''}
                             >
                                 {editCell?.rowIndex === rowIndex && editCell?.column === column ? (
                                     <input
                                         type="number"
                                         value={editValue}
                                         onChange={(e) => setEditValue(e.target.value)}
-                                        onKeyDown={handleEdit}
+                                        onBlur={() => handleCellUpdate(rowIndex, column)}
+                                        onKeyDown={(e) => handleKeyPress(e, rowIndex, column)}
                                         autoFocus
-                                        className="cell-input"
-                                        step="0.01"
                                     />
                                 ) : (
                                     row[column]
@@ -82,4 +90,4 @@ export const EditableDataTable = ({ data, onDataUpdate }) => {
             </table>
         </div>
     );
-};
+}

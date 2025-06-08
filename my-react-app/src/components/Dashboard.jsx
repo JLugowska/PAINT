@@ -1,39 +1,32 @@
 import { useUser } from "../context/UserContext";
-import { useStats, filterData, demoPowerData, demoEnergyData, demoVoltageData, demoCurrentData } from "../context/StatsContext";
-import {useEffect, useState} from "react";
+import { useStats, filterData,demoData} from "../context/StatsContext";
+import { useState} from "react";
 import "./css/Dashboard.css";
 import AccordionChart from "../components/AccordionChart";
 import UserMenu from "./UserMenu.jsx";
-import {useDarkMode} from "./common/CommonHooks.jsx";
 
 export default function Dashboard() {
-  const { stats, setStats } = useStats();
   const { user } = useUser();
 
-  const { isDarkMode, updateFromPower } = useDarkMode({
-    storageKey: 'dashboardDarkMode' // customize storage key
-  });
-
-
+  // Initialize with transformed demo data
   const [filteredData, setFilteredData] = useState({
-    voltage: demoVoltageData,
-    power: demoPowerData,
-    energy: demoEnergyData,
-    current: demoCurrentData
+    voltage: demoData.time.map((time, index) => ({
+      time,
+      voltage: demoData.voltage[index]
+    })),
+    power: demoData.time.map((time, index) => ({
+      time,
+      power: demoData.power[index]
+    })),
+    energy: demoData.time.map((time, index) => ({
+      time,
+      energy: demoData.energy[index]
+    }))
   });
+
 
   const [startDate, setStartDate] = useState("2025-06-07T12:00");
   const [endDate, setEndDate] = useState("2025-06-07T13:00");
-
-
-//dark mode
-  useEffect(() => {
-    if (stats.power !== undefined) {
-      updateFromPower(stats.power);
-    }
-  }, [stats.power, updateFromPower]);
-
-
 
 //funkcja przygotowana dka backend(trzeba uzupełnić api do odświeżania)
 //   async function fetchLatestSample() {
@@ -91,23 +84,34 @@ export default function Dashboard() {
     e.preventDefault();
 
     setFilteredData({
-      voltage: filterData(demoVoltageData, startDate, endDate),
-      power: filterData(demoPowerData, startDate, endDate),
-      energy: filterData(demoEnergyData, startDate, endDate),
-      current: filterData(demoCurrentData, startDate, endDate)
+      voltage: filteredData.voltage.filter(item => {
+        const itemDate = new Date(item.time);
+        const start = new Date(startDate);
+        const end = new Date(endDate);
+        return itemDate >= start && itemDate <= end;
+      }),
+      power: filteredData.power.filter(item => {
+        const itemDate = new Date(item.time);
+        const start = new Date(startDate);
+        const end = new Date(endDate);
+        return itemDate >= start && itemDate <= end;
+      }),
+      energy: filteredData.energy.filter(item => {
+        const itemDate = new Date(item.time);
+        const start = new Date(startDate);
+        const end = new Date(endDate);
+        return itemDate >= start && itemDate <= end;
+      })
     });
   };
 
 
+
   return (
-      <div className={`dashboard-container ${isDarkMode ? 'dark-content' : ''}`}>
+      <div className="dashboard-container">
       <UserMenu />
       <header className="dashboard-header">
         <h1 className="dasboard-title">Witaj, {user?.email}!</h1>
-        <div className="power-indicator">
-          Aktualna moc: {stats.power}W
-          {isDarkMode && <span className="dark-mode-badge">Tryb ciemny</span>}
-        </div>
 
       </header>
       <div className="dashboard-content">
@@ -131,7 +135,6 @@ export default function Dashboard() {
               <input
                   type="datetime-local"
                   value={endDate}
-                  i
                   onChange={(e) => setEndDate(e.target.value)}
                   required
                   className="form-input"
@@ -148,40 +151,30 @@ export default function Dashboard() {
           <h2>Wykresy</h2>
 
           <AccordionChart
-            title="Wykres napięcia [V]"
-            id="voltage"
-            data={filteredData.voltage}
-            dataKey="voltage"
-            color="#FF00FF"
+              title="Wykres napięcia [V]"
+              id="voltage"
+              data={filteredData.voltage}
+              dataKey="voltage"
+              color="#FF00FF"
           />
 
           <AccordionChart
-            title="Wykres mocy [W]"
-            id="power"
-            data={filteredData.power}
-            dataKey="power"
-            color="#ff0000"
+              title="Wykres mocy [W]"
+              id="power"
+              data={filteredData.power}
+              dataKey="power"
+              color="#ff0000"
           />
 
           <AccordionChart
-            title="Wykres energii [Wh]"
-            id="energy"
-            data={filteredData.energy}
-            dataKey="energy"
-            color="#ffb600"
+              title="Wykres energii [Wh]"
+              id="energy"
+              data={filteredData.energy}
+              dataKey="energy"
+              color="#ffb600"
           />
-
-          <AccordionChart
-            title="Natężenie prądu: LED vs Halogeny [A]"
-            id="current"
-            data={filteredData.current}
-            multipleLines={[
-              { dataKey: "led", color: "#00FFFF", label: "LED" },
-              { dataKey: "halogen", color: "#00ff00", label: "Halogeny" },
-            ]}
-          />
-
         </section>
+
       </div>
     </div>
   );

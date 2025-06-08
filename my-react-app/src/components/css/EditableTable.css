@@ -1,0 +1,43 @@
+.editable-table-container {
+    overflow-x: auto;
+    max-width: 100%;
+}
+
+.editable-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 1rem;
+}
+
+.editable-table th,
+.editable-table td {
+    padding: 0.75rem;
+    text-align: center;
+    border: 1px solid #ddd;
+}
+
+.editable-table th {
+    background-color: #f4f4f4;
+    font-weight: bold;
+}
+
+.editable-table td.editable {
+    cursor: pointer;
+}
+
+.editable-table td.editable:hover {
+    background-color: #f0f0f0;
+}
+
+.editable-table input {
+    width: 100%;
+    padding: 0.25rem;
+    border: 1px solid #007bff;
+    border-radius: 3px;
+    text-align: center;
+}
+
+.editable-table input:focus {
+    outline: none;
+    border-color: #0056b3;
+}

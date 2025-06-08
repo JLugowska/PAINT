@@ -8,17 +8,17 @@ export const UserProvider = ({ children }) => {
     return saved ? JSON.parse(saved) : null;
   });
 
-  const login = async ({ email, password }) => {
+  const login = async ({ username, password }) => {
     // FAKE – dodajemy logikę użytkownika
-    if (email === "demo@demo.pl" && password === "demo123") {
-      const fakeUser = { email, role: "user" };
+    if (username === "demo" && password === "demo123") {
+      const fakeUser = { username, role: "user" };
       setUser(fakeUser);
       localStorage.setItem("user", JSON.stringify(fakeUser));
       return true;
     }
     // FAKE – dodajemy logikę admina
-    if (email === "admin@example.com" && password === "admin123") {
-      const adminUser = { email, role: "admin" };
+    if (username === "admin" && password === "admin123") {
+      const adminUser = { username, role: "admin" };
       setUser(adminUser);
       localStorage.setItem("user", JSON.stringify(adminUser));
       return true;
@@ -49,8 +49,8 @@ export const UserProvider = ({ children }) => {
   }
   */
 
- const register = async ({ email, password, name, surname }) => {
-  const newUser = { email, role: "user", name, surname }; // np. domyślnie użytkownik
+ const register = async ({ username, email, password, name, surname }) => {
+  const newUser = { username, email, role: "user", name, surname }; // np. domyślnie użytkownik
   setUser(newUser);
   localStorage.setItem("user", JSON.stringify(newUser));
   return true;
@@ -110,9 +110,9 @@ export const UserProvider = ({ children }) => {
   };
 
 
-  const resetPassword = async (email, newPassword) => {
+  const resetPassword = async (username, newPassword) => {
     // FAKE – zmień na prawdziwe
-    console.log("Resetowanie hasła dla:", email);
+    console.log("Resetowanie hasła dla:", username);
     return true;
   }
 

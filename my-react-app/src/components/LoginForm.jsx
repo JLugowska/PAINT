@@ -3,9 +3,8 @@ import { useNavigate } from "react-router-dom";
 import { UserProvider, useUser } from "../context/UserContext";
 import "./css/LoginForm.css";
 
-
 export default function LoginForm() {
-  const [email, setEmail] = useState("");
+  const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const navigate = useNavigate();
@@ -13,7 +12,7 @@ export default function LoginForm() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const success = await login({email, password});
+    const success = await login({username, password});
     if (success) {
       if(user?.role=="admin"){
         navigate("/admin");
@@ -22,7 +21,7 @@ export default function LoginForm() {
       navigate("/dashboard");
       }
     } else {
-      setError("Nieprawidłowy email lub hasło.");
+      setError("Nieprawidłowy login lub hasło.");
     }
   };
 
@@ -33,7 +32,6 @@ export default function LoginForm() {
                 ← Wróć
             </button>
         </div>
-      
       <div className="login-box">
         <h2 className="login-title">Logowanie</h2>
 
@@ -41,11 +39,11 @@ export default function LoginForm() {
 
         <form onSubmit={handleSubmit} className="login-form">
           <div className="form-group">
-            <label>Email:</label>
+            <label>Login:</label>
             <input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              type="text"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
               required
               className="form-input"
             />

@@ -4,6 +4,7 @@ import { useUser } from "../context/UserContext";
 import "./LoginForm";
 
 export default function RegisterForm() {
+  const [login, setLogin] = useState("");
   const [name, setName] = useState("");
   const [surname, setSurname] = useState("");
   const [email, setEmail] = useState("");
@@ -28,7 +29,7 @@ export default function RegisterForm() {
     return;
   }
 
-    const success = await register({ name, surname, email, password });
+    const success = await register({ login, email, password, name, surname });
     if (success) {
     navigate("/login");
   } else {
@@ -44,7 +45,7 @@ export default function RegisterForm() {
 
   return (
     <div className="login-container">
-       <div className="user-menu">
+    <div className="user-menu">
             <button onClick={() => navigate("/")} className="menu-toggle">
                 ← Wróć
             </button>
@@ -55,6 +56,17 @@ export default function RegisterForm() {
         {error && <p className="login-error">{error}</p>}
 
         <form onSubmit={handleSubmit} className="login-form">
+          <div className="form-group">
+            <label>Login:</label>
+            <input
+                type="login"
+                value={login}
+                onChange={(e) => setLogin(e.target.value)}
+                required
+                className="form-input"
+            />
+          </div>
+
           <div className="form-group">
             <label>Name:</label>
             <input

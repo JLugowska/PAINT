@@ -4,7 +4,7 @@ import { useUser } from "../context/UserContext";
 import "./css/LoginForm.css";
 
 export default function PasswordResetForm() {
-  const [email, setEmail] = useState("");
+  const [username, setUsername] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const navigate = useNavigate();
@@ -23,7 +23,7 @@ export default function PasswordResetForm() {
     }
 
     // Example: call resetPassword from context
-    const result = await resetPassword({ email, newPassword });
+    const result = await resetPassword({ username, newPassword });
     if (result?.success) {
       setSuccess("Hasło zostało zresetowane. Możesz się teraz zalogować.");
       setTimeout(() => navigate("/login"), 2000);
@@ -42,11 +42,11 @@ export default function PasswordResetForm() {
 
         <form onSubmit={handleSubmit} className="login-form">
           <div className="form-group">
-            <label>Email:</label>
+            <label>Login:</label>
             <input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              type="text"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
               required
               className="form-input"
             />

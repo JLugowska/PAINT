@@ -9,6 +9,7 @@ export default function UserProfile() {
     const { user, updateUser } = useUser();
     const navigate = useNavigate();
     const [formData, setFormData] = useState({
+        username: user?.username || "",
         email: user?.email || "",
         name: user?.name || "",
         surname: user?.surname || "",
@@ -79,6 +80,18 @@ export default function UserProfile() {
 
             <form onSubmit={handleSubmit} className="profile-form">
                 <div className="form-group">
+                    <div className="form-group">
+                        <label htmlFor="username">Login</label>
+                        <input
+                            type="text"
+                            id="name"
+                            name="name"
+                            disabled
+                            value={formData.username}
+                            onChange={handleChange}
+                            required
+                        />
+                    </div>
                     <label htmlFor="email">Email</label>
                     <input
                         type="email"

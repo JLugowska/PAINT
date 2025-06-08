@@ -16,7 +16,7 @@ export default function AccordionChart({ title, data, dataKey, color, multipleLi
           <ResponsiveContainer width="100%" height={250}>
             <LineChart data={data}>
               <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="time" />
+              <XAxis dataKey="datatime" />
               <YAxis />
               <Tooltip />
               {multipleLines
